@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>Giphy API</title>
+<style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>GifTastic!</h1>
+
+    <!--Rendered buttons will be here-->     
+    <div id="buttons-view"></div>
+
+    <form id="giphy-form">
+        <label for="giphy-input">Add a TV Show!</label>
+        <input type="text" id="giphy-input">
+        <br>
+
+    <!--Button triggers new topic to be added-->
+    <input id="add-giphy" type="submit" value="Add a TV Show!">
+    </form>
+
+    <!--Giphy's will display here-->
+    <div id="giphy-view"></div>
+
+
+
+<script
+    src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+    crossorigin="anonymous"></script>
+    
+<script type="text/javascript">
+
+//Initial array of topics
+var topics = ["New Girl", "The Office", "Seinfeld"];
+
+//displayGiphy function re-renders the HTML to display the appropriate content
+
+function displayGiphy() {
+    var giphy = $(this).attr("data-name");
+    var limit = 10;
+
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + giphy + "&limit=" + limit + "api_key=fWvynhUsZ4Uaht15RS7yP18W7UXzbzK5";
+
+    $.ajax({
+      url: queryURL,
+      method: "GET"
+    }).then(function(response) {
+
+//Creating a div to hold the Giphy
+var giphyDiv = $("<div class='giphy'");
+//Storing the rating data 
+var rating = response.data[i].rating;
+//Creating an element to have hte rating displayed
+var pOne = $("<p>").text("Rating: " + rating);
+//Displaying the rating
+giphyDiv.append(pOne);
+
+//retrieving the URL for the giphy
+
+
+//Putting all giphy's above previous giphy's
+$("#giphy-view").prepend(giphyDiv);
+
+
+});
+}
+
+//Function to create buttons
+function renderButtons() {
+//Deleting the topics prior to adding new topics otherwise repeat buttons
+    $("#buttons-view").empty();
+
+    //Looping through the array of topics
+    for (var i = 0; i < topics.length; i++) {
+        
+        //Dynamically generate buttons for each topic in the array
+        var a = $("<button>");
+        //Add a class of topic-btn to our button 
+        a.addClass("topic-btn");
+        //Add a data-attribute
+        a.attr("data-name", topics[i]);
+        //providing the initial button text
+        a.text(topics[i]);
+        //adding the button to the buttons-view div
+        $("#buttons-view").append(a);
+    }
+}
+
+//This function handles events where a topic button is clicked
+$("#add-giphy").on("click", function(event){
+    event.preventDefault();
+//This line grabs the input from the text box
+var topic = $("#giphy-input").val().trim();
+
+//Adding topic from the textbox to the array
+topics.push(topic);
+
+//calling renderButtons which handles the processing of our topics array
+renderButtons();
+});
+
+//Adding a click event listener to all elements with a class of "topic-btn"
+$(document).on("click", ".topic-btn", displayGiphy);
+
+//call the render button function
+renderButtons();
+
+</script>
+
+
+
+</div>
+
+</body>
+
+</html>
