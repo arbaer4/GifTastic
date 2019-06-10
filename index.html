@@ -23,12 +23,12 @@
     <div id="buttons-view"></div>
 
     <form id="giphy-form">
-        <label for="giphy-input">Add a TV Show!</label>
+        <label for="giphy-input">Add a TV Show:</label>
         <input type="text" id="giphy-input">
         <br>
 
     <!--Button triggers new topic to be added-->
-    <input id="add-giphy" type="submit" value="Add a TV Show!">
+    <input id="add-giphy" type="submit" value="Add your show!">
     </form>
 
     <!--Giphy's will display here-->
@@ -52,31 +52,62 @@ function displayGiphy() {
     var giphy = $(this).attr("data-name");
     var limit = 10;
 
-    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + giphy + "&limit=" + limit + "api_key=fWvynhUsZ4Uaht15RS7yP18W7UXzbzK5";
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + giphy + "&limit=" + limit + "&api_key=fWvynhUsZ4Uaht15RS7yP18W7UXzbzK5";
 
     $.ajax({
       url: queryURL,
       method: "GET"
     }).then(function(response) {
 
+    console.log(response);
+for (var x = 0; x < limit; x++) {
 //Creating a div to hold the Giphy
-var giphyDiv = $("<div class='giphy'");
+var giphyDiv = $("<div class='giphy'>");
+
 //Storing the rating data 
-var rating = response.data[i].rating;
-//Creating an element to have hte rating displayed
+var rating = response.data[x].rating;
+//Creating an element to have the rating displayed
 var pOne = $("<p>").text("Rating: " + rating);
 //Displaying the rating
 giphyDiv.append(pOne);
 
+//storing the url
+var image = $("<img>");
+image.attr("src", response.data[x].images.original_still.url);
+image.attr("data-still", response.data[x].images.original_still.url);
+image.attr("data-animate", response.data[x].images.original.url);
+image.attr("data-state", "still");
+image.attr("class", "gif"); 
+
+giphyDiv.append(image);
 //retrieving the URL for the giphy
 
 
 //Putting all giphy's above previous giphy's
 $("#giphy-view").prepend(giphyDiv);
 
-
+}
 });
 }
+
+//function for animate / still 
+
+function animateGif() {
+var state = $(this).attr("data-state");
+console.log(state);
+
+if (state === "still") {
+    $(this).attr("src", $(this).attr("data-animate"))
+    $(this).attr("data-state", "animate"); 
+}
+else {
+    $(this).attr("src", $(this).attr("data-still"))
+    $(this).attr("data-state", "still"); 
+}
+}
+
+
+
 
 //Function to create buttons
 function renderButtons() {
@@ -117,6 +148,9 @@ $(document).on("click", ".topic-btn", displayGiphy);
 
 //call the render button function
 renderButtons();
+
+//adding a click event listenter to all gifs for animate/still
+$(document).on("click", ".gif", animateGif);
 
 </script>
 
